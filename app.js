@@ -28,6 +28,7 @@ app.get("/", (req, res) => {
   });
 });
 
+// set up dynamic post handler
 app.get("/posts/:post", (req, res) => {
   posts.forEach(function (post) {
     if (_.kebabCase(post.title) === _.kebabCase(req.params.post)) {
