@@ -68,18 +68,20 @@ app.get("/", (req, res) => {
 
 // set up dynamic post handler
 app.get("/posts/:post", (req, res) => {
-  posts.forEach(function (post) {
-    if (_.kebabCase(post.title) === _.kebabCase(req.params.post)) {
-      res.render("post", {
-        title: post.title,
-        entry: post.entry,
-      });
-    } else {
-      console.log("No match found by that URL");
-    }
-  });
 
-  // res.render("post", { title: post.title, entry: post.entry });
+  const postName = req.params.post;
+
+  Post.findOne({ title: postName }, (err, foundPost) => {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      res.render("post", {
+        title: foundPost.title,
+        entry: foundPost.entry,
+      })
+    }
+  })
 });
 
 app.get("/about", (req, res) => {
@@ -96,8 +98,11 @@ app.get("/compose", (req, res) => {
 
 app.post("/compose", (req, res) => {
   const post = new Post({ title: req.body.journalTitle, entry: req.body.journalEntry });
-  post.save();
-  res.redirect("/");
+  post.save((err) => {
+    if (!err) {
+      res.redirect("/")
+    }
+  });
 });
 
 app.listen(3000, function () {
